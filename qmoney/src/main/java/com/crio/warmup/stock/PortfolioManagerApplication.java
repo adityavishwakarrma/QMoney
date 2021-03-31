@@ -6,11 +6,32 @@ import com.crio.warmup.stock.log.UncaughtExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.BufferedWriter;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
-//import java.nio.file.Files;
+
+// import java.nio.file.Files;
+import java.lang.Object;
+// import java.io.FileOutputStream; 
+
+
+import java.io.BufferedReader;
+
+//import java.io.IOException;
+
+import java.io.InputStreamReader;
+
+import java.net.HttpURLConnection;
+
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+
 import java.nio.file.Paths;
-//import java.time.LocalDate;
+import java.time.LocalDate;
 //import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -25,8 +46,44 @@ import java.util.logging.Logger;
 import org.apache.logging.log4j.ThreadContext;
 //import org.springframework.web.client.RestTemplate;
 
-
 public class PortfolioManagerApplication {
+
+  static void curl(String symbol,String fileString) throws MalformedURLException, ProtocolException, IOException
+  {
+    System.out.println(symbol);
+   
+    LocalDate date =LocalDate.now();
+
+    String urlString=new String("https://api.tiingo.com/tiingo/daily/"+symbol+"/prices?endDate="+date+"&token=dd4fbd0603076422786b55c847564b1f4aaea0ef");
+
+   // Files.write(Paths.get(pathString), urlString.getBytes(), StandardOpenOption.APPEND);
+
+   PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileString, true)));
+   out.println(urlString);
+   out.close();
+
+    //create url
+    URL url = new URL(urlString);
+    
+		// Send Get request and fetch data
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+		conn.setRequestMethod("GET");
+
+		BufferedReader br = new BufferedReader(new InputStreamReader(
+			(conn.getInputStream())));
+
+		// Read data line-by-line from buffer & print it out
+
+    String output;
+    
+		while ((output = br.readLine()) != null) {
+			System.out.println(output);
+		}
+    
+		conn.disconnect();
+
+  }
 
   // TODO: CRIO_TASK_MODULE_JSON_PARSING
   //  Read the json file provided in the argument[0]. The file will be available in the classpath.
@@ -46,12 +103,21 @@ public class PortfolioManagerApplication {
      
     List<String> ans=new ArrayList<String>();
 
+    File file = new File("qmoney/src/main/java/com/crio/warmup/stock/tingo_curl.sh");
+
     for (Trade trade : trades) {
          ans.add(trade.symbol);
          //System.out.println(trade.symbol);
-    }
+         curl(trade.symbol, file.toString());
+          
+    //      String filename= "MyFile.txt";
+    // FileWriter fw = new FileWriter(filename,true); //the true will append the new data
+    // fw.write("add a line\n");//appends the string to the file
+    //    fw.close();
 
+    }
     return ans;
+
   }
 
 
