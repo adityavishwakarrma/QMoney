@@ -168,7 +168,6 @@ public class PortfolioManagerApplication {
       String functionNameFromTestFileInStackTrace = "mainReadFile";
       String lineNumberFromTestFileInStackTrace = "21";
 
-
     return Arrays.asList(new String[]{valueOfArgument0, resultOfResolveFilePathArgs0,
         toStringOfObjectMapper, functionNameFromTestFileInStackTrace,
         lineNumberFromTestFileInStackTrace});
