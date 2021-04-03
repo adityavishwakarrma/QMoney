@@ -1,88 +1,88 @@
 package com.crio.warmup.stock;
 
-//import com.crio.warmup.stock.dto.AnnualizedReturn;
-//import com.crio.warmup.stock.dto.PortfolioTrade;
+import com.crio.warmup.stock.dto.AnnualizedReturn;
+import com.crio.warmup.stock.dto.PortfolioTrade;
+import com.crio.warmup.stock.dto.TiingoCandle;
+import com.crio.warmup.stock.dto.TotalReturnsDto;
 import com.crio.warmup.stock.log.UncaughtExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.io.BufferedWriter;
-
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
-
-// import java.nio.file.Files;
-import java.lang.Object;
-// import java.io.FileOutputStream; 
-
-
-import java.io.BufferedReader;
-
-//import java.io.IOException;
-
-import java.io.InputStreamReader;
-
-import java.net.HttpURLConnection;
-
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
-
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-//import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-//import java.util.Collections;
-//import java.util.Comparator;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
-//import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-//import java.util.stream.Collectors;
-//import java.util.stream.Stream;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.logging.log4j.ThreadContext;
-//import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestTemplate;
+
 
 public class PortfolioManagerApplication {
 
-  static void curl(String symbol,String fileString) throws MalformedURLException, ProtocolException, IOException
-  {
-    System.out.println(symbol);
-   
-    LocalDate date =LocalDate.now();
+  // Note:
+  // 1. You may need to copy relevant code from #mainReadQuotes to parse the Json.
+  // 2. Remember to get the latest quotes from Tiingo API.
 
-    String urlString=new String("https://api.tiingo.com/tiingo/daily/"+symbol+"/prices?endDate="+date+"&token=dd4fbd0603076422786b55c847564b1f4aaea0ef");
+  // TODO: CRIO_TASK_MODULE_REST_API
+  //  Find out the closing price of each stock on the end_date and return the list
+  //  of all symbols in ascending order by its close value on end date.
 
-   // Files.write(Paths.get(pathString), urlString.getBytes(), StandardOpenOption.APPEND);
+  // Note:
+  // 1. You may have to register on Tiingo to get the api_token.
+  // 2. Look at args parameter and the module instructions carefully.
+  // 2. You can copy relevant code from #mainReadFile to parse the Json.
+  // 3. Use RestTemplate#getForObject in order to call the API,
+  //    and deserialize the results in List<Candle>
 
-   PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileString, true)));
-   out.println(urlString);
-   out.close();
+  // static void curl(String uri,String filename) throws IOException
+  // {
+  //   FileWriter out = new FileWriter(filename, true);
+  //   out.write(uri+"\n");
+  //   out.close();
+  // }
+  // String filename = new String("qmoney/src/main/java/com/crio/warmup/stock/tingo_curl.sh");
+  // curl(url, filename);
+  
+  public static List<String> mainReadQuotes(String[] args) throws IOException, URISyntaxException {
+    ObjectMapper objectMapper = getObjectMapper();
+    File file1 = resolveFileFromResources(args[0]);
+    PortfolioTrade[] trades = objectMapper.readValue(file1, PortfolioTrade[].class);
+    Map<Double,String> map=new HashMap<>();
 
-    //create url
-    URL url = new URL(urlString);
+    for (PortfolioTrade trade : trades) {
+     String url=new String("https://api.tiingo.com/tiingo/daily/"+trade.getSymbol()+"/prices?startDate="+trade.getPurchaseDate()+"&endDate="+args[1]+"&token=dd4fbd0603076422786b55c847564b1f4aaea0ef");
+     
+     RestTemplate rest=new RestTemplate();  
+     TiingoCandle[] tingo = rest.getForObject(url, TiingoCandle[].class); 
+     
+     map.put(tingo[0].getClose(), trade.getSymbol());
+    }
     
-		// Send Get request and fetch data
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-		conn.setRequestMethod("GET");
-
-		BufferedReader br = new BufferedReader(new InputStreamReader(
-			(conn.getInputStream())));
-
-		// Read data line-by-line from buffer & print it out
-
-    String output;
-    
-		while ((output = br.readLine()) != null) {
-			System.out.println(output);
-		}
-    
-		conn.disconnect();
-
+    Map<Double,String> treeMap= new TreeMap<>(map);
+    List<String> ans = new ArrayList<>();
+    for(Map.Entry<Double,String> entry : treeMap.entrySet())
+    {
+       ans.add(entry.getValue()); 
+    }
+     
+    return ans ;
+    //return Collections.emptyList();
   }
 
   // TODO: CRIO_TASK_MODULE_JSON_PARSING
@@ -95,56 +95,29 @@ public class PortfolioManagerApplication {
   //  1. There can be few unused imports, you will need to fix them to make the build pass.
   //  2. You can use "./gradlew build" to check if your code builds successfully.
 
+  
+
   public static List<String> mainReadFile(String[] args) throws IOException, URISyntaxException {
     ObjectMapper objectMapper = getObjectMapper();
      
     File file1 = resolveFileFromResources(args[0]);
-    Trade[] trades = objectMapper.readValue(file1, Trade[].class);
+    PortfolioTrade[] trades = objectMapper.readValue(file1, PortfolioTrade[].class);
      
     List<String> ans=new ArrayList<String>();
 
-    File file = new File("qmoney/src/main/java/com/crio/warmup/stock/tingo_curl.sh");
+    //String filename = new String("qmoney/src/main/java/com/crio/warmup/stock/tingo_curl.sh");
 
-    for (Trade trade : trades) {
-         ans.add(trade.symbol);
-         //System.out.println(trade.symbol);
-         curl(trade.symbol, file.toString());
-          
-    //      String filename= "MyFile.txt";
-    // FileWriter fw = new FileWriter(filename,true); //the true will append the new data
-    // fw.write("add a line\n");//appends the string to the file
-    //    fw.close();
-
+    for (PortfolioTrade trade : trades) {
+         ans.add(trade.getSymbol());
+         //curl(trade.getSymbol(), filename);
     }
     return ans;
-
   }
-
-
-  // Note:
-  // 1. You may need to copy relevant code from #mainReadQuotes to parse the Json.
-  // 2. Remember to get the latest quotes from Tiingo API.
-
-
-
-
-
-  // Note:
-  // 1. You may have to register on Tiingo to get the api_token.
-  // 2. Look at args parameter and the module instructions carefully.
-  // 2. You can copy relevant code from #mainReadFile to parse the Json.
-  // 3. Use RestTemplate#getForObject in order to call the API,
-  //    and deserialize the results in List<Candle>
-
-
 
   private static void printJsonObject(Object object) throws IOException {
     Logger logger = Logger.getLogger(PortfolioManagerApplication.class.getCanonicalName());
     ObjectMapper mapper = new ObjectMapper();
     logger.info(mapper.writeValueAsString(object));
-
-   //   System.out.print(object);
-
   }
 
   private static File resolveFileFromResources(String filename) throws URISyntaxException {
@@ -212,7 +185,7 @@ public class PortfolioManagerApplication {
     Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
     ThreadContext.put("runId", UUID.randomUUID().toString());
 
-    printJsonObject(mainReadFile(args));//
+    printJsonObject(mainReadQuotes(args));
 
   }
 }
