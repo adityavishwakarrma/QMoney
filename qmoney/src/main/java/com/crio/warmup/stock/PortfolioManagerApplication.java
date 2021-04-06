@@ -195,6 +195,7 @@ public class PortfolioManagerApplication {
   
   public static List<AnnualizedReturn> mainCalculateSingleReturn(String[] args)
       throws IOException, URISyntaxException {
+        
     ObjectMapper objectMapper = getObjectMapper();
     File file1 = resolveFileFromResources(args[0]);
     PortfolioTrade[] trades = objectMapper.readValue(file1, PortfolioTrade[].class);
@@ -243,6 +244,7 @@ public class PortfolioManagerApplication {
    
   return new AnnualizedReturn(trade.getSymbol(), annualized_returns, totalReturns);
 }
+
 }
 
     
