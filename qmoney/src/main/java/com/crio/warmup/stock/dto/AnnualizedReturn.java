@@ -23,10 +23,4 @@ public class AnnualizedReturn {
   public Double getTotalReturns() {
     return totalReturns;
   }
- 
-
-  // @Override
-  // public int compareTo(AnnualizedReturn o) {
-  //   return this.getAnnualizedReturn().compareTo(o.getAnnualizedReturn());
-  // }
 }
