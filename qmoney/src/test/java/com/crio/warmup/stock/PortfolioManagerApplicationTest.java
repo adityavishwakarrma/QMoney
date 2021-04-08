@@ -66,7 +66,6 @@ class PortfolioManagerApplicationTest {
     AnnualizedReturn returns = PortfolioManagerApplication
         .calculateAnnualizedReturns(LocalDate.parse("2018-01-01"),
         trade, 10000.00, 11000.00);
-        System.out.println();
     Assertions.assertEquals(returns.getAnnualizedReturn(), 0.0322, 0.0001);
   }
 

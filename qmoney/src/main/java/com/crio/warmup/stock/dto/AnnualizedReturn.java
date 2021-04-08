@@ -1,8 +1,7 @@
 
 package com.crio.warmup.stock.dto;
 
-public class AnnualizedReturn implements Comparable< AnnualizedReturn > {
-
+public class AnnualizedReturn {
   private final String symbol;
   private final Double annualizedReturn;
   private final Double totalReturns;
@@ -26,8 +25,8 @@ public class AnnualizedReturn implements Comparable< AnnualizedReturn > {
   }
  
 
-  @Override
-  public int compareTo(AnnualizedReturn o) {
-    return this.getAnnualizedReturn().compareTo(o.getAnnualizedReturn());
-  }
+  // @Override
+  // public int compareTo(AnnualizedReturn o) {
+  //   return this.getAnnualizedReturn().compareTo(o.getAnnualizedReturn());
+  // }
 }
