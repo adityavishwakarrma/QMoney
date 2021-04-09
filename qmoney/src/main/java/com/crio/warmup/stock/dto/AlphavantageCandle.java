@@ -17,11 +17,11 @@ public class AlphavantageCandle implements Candle {
 
   @JsonProperty("1. open")
   private Double open;
-  @JsonProperty("2. close")
+  @JsonProperty("4. close")
   private Double close;
-  @JsonProperty("3. high")
+  @JsonProperty("2. high")
   private Double high;
-  @JsonProperty("4. low")
+  @JsonProperty("3. low")
   private Double low;
   
   private LocalDate date;
@@ -65,8 +65,7 @@ public class AlphavantageCandle implements Candle {
   }
 
   @Override
-  public LocalDate getDate() {
-   
+  public LocalDate getDate() {  
     return date;
   }
   public void setDate(LocalDate date)

@@ -1,8 +1,5 @@
 package com.crio.warmup.stock.quotes;
 
-import static java.time.temporal.ChronoUnit.DAYS;
-import static java.time.temporal.ChronoUnit.SECONDS;
-
 import com.crio.warmup.stock.dto.AlphavantageCandle;
 import com.crio.warmup.stock.dto.AlphavantageDailyResponse;
 import com.crio.warmup.stock.dto.Candle;
@@ -11,10 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.web.client.RestTemplate;
 
 public class AlphavantageService implements StockQuotesService {
@@ -37,15 +32,14 @@ public class AlphavantageService implements StockQuotesService {
 
   @Override
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) throws JsonProcessingException {
-     String url = buildUrl(symbol);
+  
+    String url = buildUrl(symbol);
      String apiResponse = restTemplate.getForObject(url, String.class);
 
      ObjectMapper mapper = getObjectMapper();
-     
+     mapper.registerModule(new JavaTimeModule());
      Map<LocalDate, AlphavantageCandle> dailyResponses = mapper.readValue(apiResponse, AlphavantageDailyResponse.class).getCandles();
-     
-     //Map<LocalDate, AlphavantageCandle> dailyResponses = restTemplate.getForObject(url,AlphavantageDailyResponse.class).getCandles();
-
+  
      List<Candle> stocks = new ArrayList<>();
 
      for(LocalDate date = from; !date.isAfter(to); date = date.plusDays(1))

@@ -5,8 +5,6 @@ import com.crio.warmup.stock.dto.Candle;
 import com.crio.warmup.stock.dto.TiingoCandle;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.*;
-
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,19 +25,19 @@ public class TiingoService implements StockQuotesService {
   @Override
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) throws JsonProcessingException {
     List<Candle> stockList;
-    // if(from.compareTo(to)>=0)
-    // {
-    //   throw new RuntimeException();
-    // }
+    if(from.compareTo(to)>=0)
+    {
+      throw new RuntimeException();
+    }
     String url = buildUri(symbol, from, to);
 
     String apiResponse = restTemplate.getForObject(url, String.class);
 
     ObjectMapper mapper = getObjectMapper();
+    mapper.registerModule(new JavaTimeModule());
     
     TiingoCandle[] tingo = mapper.readValue(apiResponse, TiingoCandle[].class);
             
-    //TiingoCandle[] tingo = restTemplate.getForObject(url, TiingoCandle[].class);
     if(tingo != null){
       stockList =Arrays.asList(tingo);
      Comparator<Candle> sortBy = Comparator.comparing(Candle::getDate);
@@ -47,7 +45,7 @@ public class TiingoService implements StockQuotesService {
    }
    else
    {
-     stockList = new ArrayList<Candle>(); // Arrays.asList(new TiingoCandle[0])
+     stockList = new ArrayList<Candle>();  
    }
    return stockList;
  }
