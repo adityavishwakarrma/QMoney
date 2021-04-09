@@ -30,20 +30,22 @@ public class AlphavantageService implements StockQuotesService {
   }
   protected String buildUrl(String symbol)
   {
-    String uriTemplate = String.format("https://www.alphavantage.co/query?function=%s&symbol=%s&output=full&apikey=%s"
-    , FUNCTION, symbol, TOKEN);
-     return uriTemplate;
+     String uriTemplate = String.format("https://www.alphavantage.co/query?function=%s&symbol=%s&output=full&apikey=%s"
+     , FUNCTION, symbol, TOKEN);
+      return uriTemplate;
   }
 
   @Override
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) throws JsonProcessingException {
      String url = buildUrl(symbol);
-     String apiResponse = restTemplate.getForObject(url, String.class);
+    //  String apiResponse = restTemplate.getForObject(url, String.class);
 
-     ObjectMapper mapper = getObjectMapper();
+    //  ObjectMapper mapper = getObjectMapper();
      
-     Map<LocalDate, AlphavantageCandle> dailyResponses = mapper.readValue(apiResponse, AlphavantageDailyResponse.class).getCandles();
+    //  Map<LocalDate, AlphavantageCandle> dailyResponses = mapper.readValue(apiResponse, AlphavantageDailyResponse.class).getCandles();
      
+     Map<LocalDate, AlphavantageCandle> dailyResponses = restTemplate.getForObject(url,AlphavantageDailyResponse.class).getCandles();
+
      List<Candle> stocks = new ArrayList<>();
 
      for(LocalDate date = from; !date.isAfter(to); date = date.plusDays(1))
