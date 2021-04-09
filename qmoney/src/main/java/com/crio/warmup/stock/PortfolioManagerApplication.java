@@ -63,12 +63,7 @@ public class PortfolioManagerApplication {
   // 3. Use RestTemplate#getForObject in order to call the API,
   // and deserialize the results in List<Candle>
 
-  // static void curl(String url, File filename) throws IOException
-  // {
-  // FileWriter fw = new FileWriter(filename,true);
-  // fw.append(url + "\n");
-  // fw.close();
-  // }
+   
 
   public static List<String> mainReadQuotes(String[] args) throws IOException, URISyntaxException {
     ObjectMapper objectMapper = getObjectMapper();
@@ -79,8 +74,7 @@ public class PortfolioManagerApplication {
     for (PortfolioTrade trade : trades) {
       String url = new String("https://api.tiingo.com/tiingo/daily/" + trade.getSymbol() + "/prices?startDate="
           + trade.getPurchaseDate() + "&endDate=" + args[1] + "&token=dd4fbd0603076422786b55c847564b1f4aaea0ef");
-      // File filename =new File("src/main/java/com/crio/warmup/stock/tingo_curl.sh");
-      // curl(url,filename);
+       
       RestTemplate rest = new RestTemplate();
       TiingoCandle[] tingo = rest.getForObject(url, TiingoCandle[].class);
 

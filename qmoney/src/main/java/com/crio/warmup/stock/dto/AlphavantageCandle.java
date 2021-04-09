@@ -23,7 +23,7 @@ public class AlphavantageCandle implements Candle {
   private Double high;
   @JsonProperty("4. low")
   private Double low;
-  @JsonProperty("5. date")
+  
   private LocalDate date;
 
   @Override

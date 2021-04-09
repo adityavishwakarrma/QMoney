@@ -51,6 +51,7 @@ class TiingoServiceTest {
       + "\"adjClose\":1078.07,\"adjHigh\":1080.0,\"adjLow\":1036.86,\"adjOpen\":1042.56,\"adjVolume"
       + "\":2301428,\"divCash\":0.0,\"splitFactor\":1.0}]";
 
+      
   @Test
   @MockitoSettings(strictness = Strictness.LENIENT)
   void getStockQuoteSingle() throws Exception {
@@ -82,8 +83,7 @@ class TiingoServiceTest {
     List<String> propertyKeyValues2 = urlCaptorWithMap.getAllValues();
     List<URI> propertyKeyValues3 = urlCaptorAsUri.getAllValues();
 
-    assertTrue(!propertyKeyValues.isEmpty() || !propertyKeyValues2.isEmpty() || !propertyKeyValues3
-        .isEmpty());
+    assertTrue(!propertyKeyValues.isEmpty() || !propertyKeyValues2.isEmpty() || !propertyKeyValues3.isEmpty());
 
   }
 }

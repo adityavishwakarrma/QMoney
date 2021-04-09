@@ -30,9 +30,9 @@ public class AlphavantageService implements StockQuotesService {
   }
   protected String buildUrl(String symbol)
   {
-     String uriTemplate = String.format("https://www.alphavantage.co/query?function=%&symbol=%&output=%&apikey=%"
-     , FUNCTION, symbol, TOKEN);
-      return uriTemplate;
+    String uriTemplate = String.format("https://www.alphavantage.co/query?function=%s&symbol=%s&output=full&apikey=%s"
+    , FUNCTION, symbol, TOKEN);
+     return uriTemplate;
   }
 
   @Override

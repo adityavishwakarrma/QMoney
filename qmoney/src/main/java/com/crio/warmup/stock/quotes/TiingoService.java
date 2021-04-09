@@ -16,11 +16,10 @@ import org.springframework.web.client.RestTemplate;
 
 public class TiingoService implements StockQuotesService {
 
-
-  private RestTemplate restTemplate;
+  private RestTemplate restTemplate ;
 
   protected TiingoService(RestTemplate restTemplate) {
-    this.restTemplate = restTemplate;
+   this.restTemplate = restTemplate;
   }
 
   @Override
