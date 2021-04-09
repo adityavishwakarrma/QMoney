@@ -80,6 +80,8 @@ private Comparator<AnnualizedReturn> getComparator() {
 
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
       throws JsonProcessingException {
+      
+    //  List<Candle> stockList;
     //  if(from.compareTo(to)>=0)
     //  {
     //    throw new RuntimeException();
@@ -91,12 +93,12 @@ private Comparator<AnnualizedReturn> getComparator() {
 
     //  if(tingo == null)
     //  {
-    //    return new ArrayList<Candle>();
+    //   stockList = new ArrayList<Candle>();
     //  }
     //  else {
-    //   List<Candle> stockList =Arrays.asList(tingo);
-    //   return stockList;
+    //   stockList =Arrays.asList(tingo);
     //  }
+    //  return stockList;
      return stockQuotesService.getStockQuote(symbol, from, to);
   }
 

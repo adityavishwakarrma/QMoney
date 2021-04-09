@@ -31,7 +31,7 @@ public enum StockQuoteServiceFactory {
   //  Run the tests using command below and make sure it passes
   //  ./gradlew test --tests StockQuoteServiceFactory
 
-  public StockQuotesService getService(String provider,  RestTemplate restTemplate) {
+  public static StockQuotesService getService(String provider,  RestTemplate restTemplate) {
      if(provider == null)
      return new AlphavantageService(restTemplate);
      else if(provider.equalsIgnoreCase("tiingo"))

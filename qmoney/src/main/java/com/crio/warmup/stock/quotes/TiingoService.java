@@ -27,12 +27,19 @@ public class TiingoService implements StockQuotesService {
   @Override
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) throws JsonProcessingException {
     List<Candle> stockList;
-    if(from.compareTo(to)>=0)
-    {
-      throw new RuntimeException();
-    }
+    // if(from.compareTo(to)>=0)
+    // {
+    //   throw new RuntimeException();
+    // }
     String url = buildUri(symbol, from, to);
-    TiingoCandle[] tingo = restTemplate.getForObject(url, TiingoCandle[].class);
+
+    String apiResponse = restTemplate.getForObject(url, String.class);
+
+    ObjectMapper mapper = getObjectMapper();
+    
+    TiingoCandle[] tingo = mapper.readValue(apiResponse, TiingoCandle[].class);
+            
+    //TiingoCandle[] tingo = restTemplate.getForObject(url, TiingoCandle[].class);
     if(tingo != null){
       stockList =Arrays.asList(tingo);
      Comparator<Candle> sortBy = Comparator.comparing(Candle::getDate);
@@ -40,12 +47,16 @@ public class TiingoService implements StockQuotesService {
    }
    else
    {
-     stockList = Arrays.asList(new TiingoCandle[0]);
+     stockList = new ArrayList<Candle>(); // Arrays.asList(new TiingoCandle[0])
    }
    return stockList;
  }
 
-  protected String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {
+  private ObjectMapper getObjectMapper() {
+   return new ObjectMapper();
+ }
+
+ protected String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {
     String token = "dd4fbd0603076422786b55c847564b1f4aaea0ef";
 
     String uriTemplate = "https://api.tiingo.com/tiingo/daily/$SYMBOL/prices?"
