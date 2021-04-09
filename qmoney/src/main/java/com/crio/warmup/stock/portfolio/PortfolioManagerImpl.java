@@ -8,6 +8,7 @@ import com.crio.warmup.stock.dto.AnnualizedReturn;
 import com.crio.warmup.stock.dto.Candle;
 import com.crio.warmup.stock.dto.PortfolioTrade;
 import com.crio.warmup.stock.dto.TiingoCandle;
+import com.crio.warmup.stock.quotes.StockQuotesService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -33,7 +34,7 @@ import org.springframework.web.client.RestTemplate;
 public class PortfolioManagerImpl implements PortfolioManager {
 
 
-
+  StockQuotesService stockQuotesService;
 
   private RestTemplate restTemplate;
 
@@ -59,7 +60,14 @@ public class PortfolioManagerImpl implements PortfolioManager {
 
   //CHECKSTYLE:OFF
 
-  private Comparator<AnnualizedReturn> getComparator() {
+  public PortfolioManagerImpl(StockQuotesService stockQuotesService) {
+    this.stockQuotesService=stockQuotesService;
+}
+
+
+
+
+private Comparator<AnnualizedReturn> getComparator() {
     return Comparator.comparing(AnnualizedReturn::getAnnualizedReturn).reversed();
   }
 
@@ -72,37 +80,36 @@ public class PortfolioManagerImpl implements PortfolioManager {
 
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
       throws JsonProcessingException {
-        
-     if(from.compareTo(to)>=0)
-     {
-       throw new RuntimeException();
-     }
+    //  if(from.compareTo(to)>=0)
+    //  {
+    //    throw new RuntimeException();
+    //  }
 
-     String url = buildUri(symbol, from, to);
+    //  String url = buildUri(symbol, from, to);
 
-     TiingoCandle[] tingo = restTemplate.getForObject(url, TiingoCandle[].class);
+    //  TiingoCandle[] tingo = restTemplate.getForObject(url, TiingoCandle[].class);
 
-     if(tingo == null)
-     {
-       return new ArrayList<Candle>();
-     }
-     else {
-      List<Candle> stockList =Arrays.asList(tingo);
-      return stockList;
-     }
-
+    //  if(tingo == null)
+    //  {
+    //    return new ArrayList<Candle>();
+    //  }
+    //  else {
+    //   List<Candle> stockList =Arrays.asList(tingo);
+    //   return stockList;
+    //  }
+     return stockQuotesService.getStockQuote(symbol, from, to);
   }
 
-  protected String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {
-      String token = "dd4fbd0603076422786b55c847564b1f4aaea0ef";
+  // protected String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {
+  //     String token = "dd4fbd0603076422786b55c847564b1f4aaea0ef";
 
-      String uriTemplate = "https://api.tiingo.com/tiingo/daily/$SYMBOL/prices?"
-      + "startDate=$STARTDATE&endDate=$ENDDATE&token=$APIKEY";
+  //     String uriTemplate = "https://api.tiingo.com/tiingo/daily/$SYMBOL/prices?"
+  //     + "startDate=$STARTDATE&endDate=$ENDDATE&token=$APIKEY";
   
-      String url =uriTemplate.replace("$APIKEY",token).replace("$SYMBOL", symbol).replace("$STARTDATE", startDate.toString()).replace("$ENDDATE", endDate.toString());
+  //     String url =uriTemplate.replace("$APIKEY",token).replace("$SYMBOL", symbol).replace("$STARTDATE", startDate.toString()).replace("$ENDDATE", endDate.toString());
       
-      return url;
-  }
+  //     return url;
+  // }
 
   public AnnualizedReturn getAnnualizedReturn(PortfolioTrade trade ,LocalDate endLocalDate)
   {
@@ -134,31 +141,8 @@ public class PortfolioManagerImpl implements PortfolioManager {
     }
     catch(JsonProcessingException e){
       annualizedReturn = new AnnualizedReturn(trade.getSymbol(), Double.NaN, Double.NaN);
-
     }
-
     return annualizedReturn;
-  // //Extract the stocks for startDate and endDate
-  // if(tingo!=null)
-  // {
-  //   TiingoCandle stockStartDate = tingo[0];
-  //   TiingoCandle stockEndDate   = tingo[tingo.length-1];
-
-  //   Double buyprice = stockStartDate.getOpen();
-  //   double sellprice = stockEndDate.getClose();
-
-  //   Double totalReturns = (sellprice - buyprice) / buyprice;
-  //   Double total_num_years = t.getPurchaseDate().until(endDate, ChronoUnit.DAYS)/365.24;
-  //   Double annualized_returns = Math.pow(1 + totalReturns, 1.0/total_num_years) - 1;  
-
-  //   AnnualizedReturn annualizedReturn = new AnnualizedReturn(t.getSymbol(), annualized_returns, totalReturns);
-
-  //   return annualizedReturn;
-  // }
-  // else {
-  //   return new AnnualizedReturn(t.getSymbol(), Double.NaN, Double.NaN);
-  // }
-
   }
 
   @Override
