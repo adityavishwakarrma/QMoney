@@ -34,7 +34,8 @@ public class AlphavantageService implements StockQuotesService {
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) throws JsonProcessingException {
   
     String url = buildUrl(symbol);
-     String apiResponse = restTemplate.getForObject(url, String.class);
+    String apiResponse = restTemplate.getForObject(url, String.class);
+    System.out.println(apiResponse); 
 
      ObjectMapper mapper = getObjectMapper();
      mapper.registerModule(new JavaTimeModule());
