@@ -41,7 +41,6 @@ public class AlphavantageService implements StockQuotesService {
 try{
     String url = buildUrl(symbol);
     String apiResponse = restTemplate.getForObject(url, String.class);
-    System.out.println(apiResponse); 
 
      ObjectMapper mapper = getObjectMapper();
      mapper.registerModule(new JavaTimeModule());
