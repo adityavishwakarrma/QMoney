@@ -53,15 +53,11 @@ public class TiingoService implements StockQuotesService {
     stockList = new ArrayList<Candle>();  
    }
 
-  }catch(JsonProcessingException e)
+  }catch(Exception e)
   {
     throw new StockQuoteServiceException("meaningful message " + e.getMessage());
-  }catch(Exception e){
-    throw new RuntimeException(e.getMessage());
-  }
-  if(stockList == null )
-  throw new StockQuoteServiceException("meaningful message null stocklist ");
- 
+  } 
+  
   return stockList;
  }
 

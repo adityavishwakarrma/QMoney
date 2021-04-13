@@ -8,6 +8,8 @@ import com.crio.warmup.stock.exception.StockQuoteServiceException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,14 +59,10 @@ try{
        }
      }
 
-    }catch(JsonProcessingException e)
-    {
-      throw new StockQuoteServiceException("meaningful message " + e.getMessage());
     }catch(Exception e)
     {
-      throw new RuntimeException(e.getMessage());
-    }
-    
+      throw new StockQuoteServiceException("meaningful message " + e.getMessage());
+    } 
     return stocks;
   }
    
