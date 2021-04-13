@@ -3,14 +3,18 @@ package com.crio.warmup.stock.quotes;
 
 import com.crio.warmup.stock.dto.Candle;
 import com.crio.warmup.stock.dto.TiingoCandle;
+import com.crio.warmup.stock.exception.StockQuoteServiceException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,12 +27,13 @@ public class TiingoService implements StockQuotesService {
   }
 
   @Override
-  public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) throws JsonProcessingException {
+  public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) throws  StockQuoteServiceException {
     List<Candle> stockList;
-    if(from.compareTo(to)>=0)
-    {
-      throw new RuntimeException();
-    }
+    // if(from.compareTo(to)>=0)
+    // {
+    //   throw new RuntimeException();
+    // }
+    try{
     String url = buildUri(symbol, from, to);
 
     String apiResponse = restTemplate.getForObject(url, String.class);
@@ -39,15 +44,25 @@ public class TiingoService implements StockQuotesService {
     TiingoCandle[] tingo = mapper.readValue(apiResponse, TiingoCandle[].class);
             
     if(tingo != null){
-      stockList =Arrays.asList(tingo);
-     Comparator<Candle> sortBy = Comparator.comparing(Candle::getDate);
-     Collections.sort(stockList, sortBy);
+    stockList =Arrays.asList(tingo);
+    Comparator<Candle> sortBy = Comparator.comparing(Candle::getDate);
+    Collections.sort(stockList, sortBy);
    }
    else
    {
-     stockList = new ArrayList<Candle>();  
+    stockList = new ArrayList<Candle>();  
    }
-   return stockList;
+
+  }catch(JsonProcessingException e)
+  {
+    throw new StockQuoteServiceException("WWmeaningful message " + e.getMessage());
+  }catch(Exception e){
+    throw new RuntimeException("\nWW" + e.getMessage());
+  }
+  if(stockList == null )
+  throw new StockQuoteServiceException("WWmeaningful message null stocklist ");
+ 
+  return stockList;
  }
 
   private ObjectMapper getObjectMapper() {
@@ -79,5 +94,21 @@ public class TiingoService implements StockQuotesService {
 
   // TODO: CRIO_TASK_MODULE_ADDITIONAL_REFACTOR
   //  Write a method to create appropriate url to call the Tiingo API.
+
+
+
+
+
+  // TODO: CRIO_TASK_MODULE_EXCEPTIONS
+  //  1. Update the method signature to match the signature change in the interface.
+  //     Start throwing new StockQuoteServiceException when you get some invalid response from
+  //     Tiingo, or if Tiingo returns empty results for whatever reason, or you encounter
+  //     a runtime exception during Json parsing.
+  //  2. Make sure that the exception propagates all the way from
+  //     PortfolioManager#calculateAnnualisedReturns so that the external user's of our API
+  //     are able to explicitly handle this exception upfront.
+
+  //CHECKSTYLE:OFF
+
 
 }

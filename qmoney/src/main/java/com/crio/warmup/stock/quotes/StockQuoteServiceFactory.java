@@ -11,13 +11,9 @@ public enum StockQuoteServiceFactory {
   // Pros and cons of implementing Singleton via enum.
   // https://softwareengineering.stackexchange.com/q/179386/253205
 
- // public final static INSTANCE = new StockQuoteServiceFactory();
-  INSTANCE;
-  private StockQuoteServiceFactory()
-  {
-
-  }
-
+ 
+   INSTANCE;
+  
   
 
   // TODO: CRIO_TASK_MODULE_ADDITIONAL_REFACTOR
@@ -32,13 +28,17 @@ public enum StockQuoteServiceFactory {
   //  ./gradlew test --tests StockQuoteServiceFactory
 
   public static StockQuotesService getService(String provider,  RestTemplate restTemplate) {
+
      if(provider == null)
      return new AlphavantageService(restTemplate);
+
      else if(provider.equalsIgnoreCase("tiingo"))
      {
        return new TiingoService(restTemplate);
      }
+
      else 
      return new AlphavantageService(restTemplate);
+     
   }
 }

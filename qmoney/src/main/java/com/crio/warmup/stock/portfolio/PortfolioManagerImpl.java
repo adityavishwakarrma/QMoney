@@ -8,6 +8,7 @@ import com.crio.warmup.stock.dto.AnnualizedReturn;
 import com.crio.warmup.stock.dto.Candle;
 import com.crio.warmup.stock.dto.PortfolioTrade;
 import com.crio.warmup.stock.dto.TiingoCandle;
+import com.crio.warmup.stock.exception.StockQuoteServiceException;
 import com.crio.warmup.stock.quotes.StockQuotesService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,6 +38,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
   StockQuotesService stockQuotesService;
 
   private RestTemplate restTemplate;
+
 
   // Caution: Do not delete or modify the constructor, or else your build will break!
   // This is absolutely necessary for backward compatibility
@@ -79,7 +81,7 @@ private Comparator<AnnualizedReturn> getComparator() {
 
 
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
-      throws JsonProcessingException {
+      throws JsonProcessingException, StockQuoteServiceException {
       
     //  List<Candle> stockList;
     //  if(from.compareTo(to)>=0)
@@ -114,6 +116,7 @@ private Comparator<AnnualizedReturn> getComparator() {
   // }
 
   public AnnualizedReturn getAnnualizedReturn(PortfolioTrade trade ,LocalDate endLocalDate)
+      throws StockQuoteServiceException
   {
     AnnualizedReturn annualizedReturn;
     String symbol = trade.getSymbol();
@@ -148,7 +151,8 @@ private Comparator<AnnualizedReturn> getComparator() {
   }
 
   @Override
-  public List<AnnualizedReturn> calculateAnnualizedReturn(List<PortfolioTrade> portfolioTrades, LocalDate endDate) {
+  public List<AnnualizedReturn> calculateAnnualizedReturn(List<PortfolioTrade> portfolioTrades, LocalDate endDate)
+      throws StockQuoteServiceException {
 
     List<AnnualizedReturn> annualizedReturns = new ArrayList<>();
     for(PortfolioTrade t : portfolioTrades)

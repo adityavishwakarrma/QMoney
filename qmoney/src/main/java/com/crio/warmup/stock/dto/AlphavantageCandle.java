@@ -73,3 +73,7 @@ public class AlphavantageCandle implements Candle {
       this.date = date;
   }
 }
+
+
+
+
