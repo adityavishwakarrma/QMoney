@@ -59,12 +59,12 @@ try{
 
     }catch(JsonProcessingException e)
     {
-      throw new StockQuoteServiceException("WWmeaningful message " + e.getMessage());
+      throw new StockQuoteServiceException("meaningful message " + e.getMessage());
     }catch(Exception e)
     {
-      throw new RuntimeException("WW"+e.getMessage());
+      throw new RuntimeException(e.getMessage());
     }
-
+    
     return stocks;
   }
    

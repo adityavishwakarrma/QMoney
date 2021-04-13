@@ -55,12 +55,12 @@ public class TiingoService implements StockQuotesService {
 
   }catch(JsonProcessingException e)
   {
-    throw new StockQuoteServiceException("WWmeaningful message " + e.getMessage());
+    throw new StockQuoteServiceException("meaningful message " + e.getMessage());
   }catch(Exception e){
-    throw new RuntimeException("\nWW" + e.getMessage());
+    throw new RuntimeException(e.getMessage());
   }
   if(stockList == null )
-  throw new StockQuoteServiceException("WWmeaningful message null stocklist ");
+  throw new StockQuoteServiceException("meaningful message null stocklist ");
  
   return stockList;
  }
