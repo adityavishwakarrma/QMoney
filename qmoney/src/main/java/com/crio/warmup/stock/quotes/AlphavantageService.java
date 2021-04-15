@@ -42,21 +42,19 @@ try{
     String url = buildUrl(symbol);
     String apiResponse = restTemplate.getForObject(url, String.class);
 
-     ObjectMapper mapper = getObjectMapper();
-     mapper.registerModule(new JavaTimeModule());
-     Map<LocalDate, AlphavantageCandle> dailyResponses = mapper.readValue(apiResponse, AlphavantageDailyResponse.class).getCandles();
-  
-    
+    ObjectMapper mapper = getObjectMapper();
+    mapper.registerModule(new JavaTimeModule());
+    Map<LocalDate, AlphavantageCandle> dailyResponses = mapper.readValue(apiResponse, AlphavantageDailyResponse.class).getCandles();
 
-     for(LocalDate date = from; !date.isAfter(to); date = date.plusDays(1))
-     {
+    for(LocalDate date = from; !date.isAfter(to); date = date.plusDays(1))
+    {
        AlphavantageCandle candle = dailyResponses.get(date);
        if(candle!=null)
        {
          candle.setDate(date);
          stocks.add(candle);
        }
-     }
+    }
 
     }catch(Exception e)
     {

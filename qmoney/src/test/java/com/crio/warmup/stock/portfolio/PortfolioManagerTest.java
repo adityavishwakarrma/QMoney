@@ -85,7 +85,6 @@ class PortfolioManagerTest {
     //given
     String moduleToRun = null;
 
-
     if (moduleToRun.equals("REFACTOR")) {
       Mockito.doReturn(getCandles(aaplQuotes))
           .when(portfolioManager).getStockQuote(eq("AAPL"), any(), any());

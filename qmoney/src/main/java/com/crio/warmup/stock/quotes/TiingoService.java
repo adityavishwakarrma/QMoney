@@ -34,28 +34,28 @@ public class TiingoService implements StockQuotesService {
     //   throw new RuntimeException();
     // }
     try{
-    String url = buildUri(symbol, from, to);
+        String url = buildUri(symbol, from, to);
 
-    String apiResponse = restTemplate.getForObject(url, String.class);
+        String apiResponse = restTemplate.getForObject(url, String.class);
 
-    ObjectMapper mapper = getObjectMapper();
-    mapper.registerModule(new JavaTimeModule());
-    
-    TiingoCandle[] tingo = mapper.readValue(apiResponse, TiingoCandle[].class);
-            
-    if(tingo != null){
-    stockList =Arrays.asList(tingo);
-    Comparator<Candle> sortBy = Comparator.comparing(Candle::getDate);
-    Collections.sort(stockList, sortBy);
-   }
-   else
-   {
-    stockList = new ArrayList<Candle>();  
-   }
+        ObjectMapper mapper = getObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        
+        TiingoCandle[] tingo = mapper.readValue(apiResponse, TiingoCandle[].class);
+                
+        if(tingo != null){
+        stockList =Arrays.asList(tingo);
+        Comparator<Candle> sortBy = Comparator.comparing(Candle::getDate);
+        Collections.sort(stockList, sortBy);
+       }
+      else
+      {
+            stockList = new ArrayList<Candle>();  
+      }
 
   }catch(Exception e)
   {
-    throw new StockQuoteServiceException("meaningful message " + e.getMessage());
+      throw new StockQuoteServiceException("meaningful message " + e.getMessage());
   } 
   
   return stockList;

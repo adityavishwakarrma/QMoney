@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -82,38 +83,8 @@ private Comparator<AnnualizedReturn> getComparator() {
 
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
       throws JsonProcessingException, StockQuoteServiceException {
-      
-    //  List<Candle> stockList;
-    //  if(from.compareTo(to)>=0)
-    //  {
-    //    throw new RuntimeException();
-    //  }
-
-    //  String url = buildUri(symbol, from, to);
-
-    //  TiingoCandle[] tingo = restTemplate.getForObject(url, TiingoCandle[].class);
-
-    //  if(tingo == null)
-    //  {
-    //   stockList = new ArrayList<Candle>();
-    //  }
-    //  else {
-    //   stockList =Arrays.asList(tingo);
-    //  }
-    //  return stockList;
      return stockQuotesService.getStockQuote(symbol, from, to);
   }
-
-  // protected String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {
-  //     String token = "dd4fbd0603076422786b55c847564b1f4aaea0ef";
-
-  //     String uriTemplate = "https://api.tiingo.com/tiingo/daily/$SYMBOL/prices?"
-  //     + "startDate=$STARTDATE&endDate=$ENDDATE&token=$APIKEY";
-  
-  //     String url =uriTemplate.replace("$APIKEY",token).replace("$SYMBOL", symbol).replace("$STARTDATE", startDate.toString()).replace("$ENDDATE", endDate.toString());
-      
-  //     return url;
-  // }
 
   public AnnualizedReturn getAnnualizedReturn(PortfolioTrade trade ,LocalDate endLocalDate)
       throws StockQuoteServiceException
@@ -163,4 +134,34 @@ private Comparator<AnnualizedReturn> getComparator() {
     Collections.sort(annualizedReturns, getComparator());
     return annualizedReturns;
   }
+
+  @Override
+  public List<AnnualizedReturn> calculateAnnualizedReturnParallel(List<PortfolioTrade> portfolioTrades,
+    LocalDate endDate, int numThreads) throws InterruptedException, StockQuoteServiceException {
+    
+    List<Future<AnnualizedReturn>> futureReturnsList = new ArrayList<Future<AnnualizedReturn>>();
+    List<AnnualizedReturn> annualizedReturns = new ArrayList<>();
+
+    final ExecutorService pool = Executors.newFixedThreadPool(numThreads);
+
+    for(PortfolioTrade trade : portfolioTrades)
+    {
+      Callable<AnnualizedReturn> callableTask = () -> {
+        return getAnnualizedReturn(trade, endDate);
+      };
+      futureReturnsList.add(pool.submit(callableTask));
+    }
+
+    for(Future<AnnualizedReturn> futureReturns : futureReturnsList){
+      try {
+        annualizedReturns.add(futureReturns.get());
+      } catch (ExecutionException e) {
+        throw new StockQuoteServiceException("Error when calling the API", e);
+      }
+    }
+
+    Collections.sort(annualizedReturns, getComparator());
+    return annualizedReturns;
+  }
+
 }
